@@ -19,6 +19,8 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
           MYSQL_DATABASE: kantin_test # WAJIB SAMA dengan di phpunit.xml
+          MYSQL_USER: kantin               # Tambahkan ini: Membuat user baru bernama 'kantin'
+          MYSQL_PASSWORD: "" 
         ports:
           - 3306:3306
         options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -50,23 +52,29 @@ jobs:
             sleep 2
           done
 
-      # Menyuntikkan konfigurasi agar Laravel menggunakan driver lokal (Tanpa Redis) saat migrasi
       - name: Setup Application
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_DATABASE: kantin_test
-          DB_USERNAME: root
+          DB_USERNAME: kantin              # Diubah menjadi kantin
           DB_PASSWORD: ""
-          # Menimpa driver Redis bawaan .env.example agar tidak error saat setup
           CACHE_STORE: array
           SESSION_DRIVER: array
           QUEUE_CONNECTION: sync
         run: composer setup
 
-      # Jalankan rangkaian tes terintegrasi Anda
       - name: Run CI Checks
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: kantin_test
+          DB_USERNAME: kantin              # Diubah menjadi kantin
+          DB_PASSWORD: ""
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
         run: composer ci:check
-
 
