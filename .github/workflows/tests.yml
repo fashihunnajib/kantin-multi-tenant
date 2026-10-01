@@ -12,6 +12,16 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: kantin_test # WAJIB SAMA dengan di phpunit.xml
+        ports:
+          - 3306:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout code
@@ -24,6 +34,7 @@ jobs:
         with:
           php-version: '8.4'
           tools: composer:v2
+          extensions: pdo_mysql, mbstring, xml, ctype # Ditambahkan pdo_mysql untuk MariaDB
           coverage: none
 
       - name: Setup Node
@@ -31,8 +42,31 @@ jobs:
         with:
           node-version: '22'
 
+      # Memastikan MariaDB benar-benar siap menerima koneksi sebelum setup dimulai
+      - name: Wait for MariaDB
+        run: |
+          until nc -z -v -w30 127.0.0.1 3306; do
+            echo "Menunggu MariaDB siap..."
+            sleep 2
+          done
+
+      # Menyuntikkan konfigurasi agar Laravel menggunakan driver lokal (Tanpa Redis) saat migrasi
       - name: Setup Application
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: kantin_test
+          DB_USERNAME: root
+          DB_PASSWORD: ""
+          # Menimpa driver Redis bawaan .env.example agar tidak error saat setup
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
         run: composer setup
 
+      # Jalankan rangkaian tes terintegrasi Anda
       - name: Run CI Checks
         run: composer ci:check
+
+
