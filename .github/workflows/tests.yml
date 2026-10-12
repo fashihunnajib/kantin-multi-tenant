@@ -21,7 +21,7 @@ jobs:
           MARIADB_ROOT_PASSWORD: root
           MARIADB_DATABASE: kantin_test
           MARIADB_USER: kantin
-          MARIADB_PASSWORD: rahasia
+          MARIADB_PASSWORD: secret
         ports:
           - 3306:3306
         options: >-
