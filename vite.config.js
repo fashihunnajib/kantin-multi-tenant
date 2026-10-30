@@ -22,11 +22,11 @@ export default defineConfig({
     ]),
     server: {
         cors: true,
-        host: '0.0.0.0',
-        hmr: {
-            host: 'vite-dev.grapplecore.my.id',
-            clientPort: 443,
-        },
+        // host: '0.0.0.0',
+        // hmr: {
+        //     host: 'vite-dev.grapplecore.my.id',
+        //     clientPort: 443,
+        // },
 
         watch: {
             ignored: [
