@@ -9,7 +9,6 @@ use App\Models\ModifierOption;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\UserTenantRole;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
