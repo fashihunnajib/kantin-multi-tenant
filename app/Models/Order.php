@@ -32,7 +32,7 @@ class Order extends Model
     {
         return $this->belongsTo(Canteen::class);
     }
-    
+
     /** @return BelongsTo<CustomerSession, $this> */
     public function customerSession(): BelongsTo
     {
